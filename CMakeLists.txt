@@ -10,6 +10,12 @@ set(${PROJECT_NAME}_SRC
    ${SRC_PATH}/main.cpp
 )
 
+find_package(Boost 1.68.0)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  add_executable( f${PROJECT_NAME} ${${PROJECT_NAME}_SRC} )
+endif()
+
 #########################################################
 # Executable
 add_executable( ${PROJECT_NAME} ${${PROJECT_NAME}_SRC} )

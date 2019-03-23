@@ -21,10 +21,11 @@ namespace runs_test {
      * Since bits = 1001101011, then
      *                 V_{ n }(obs) = ( 1 + 0 + 1 + 0 + 1 + 1 + 1 + 1 + 0 ) + 1 = 7.
     */
-    std::tuple<uint64_t, uint64_t> count_v_and_ones( const std::vector<int> &bits )
+    template<typename Container>
+    std::tuple<double, uint64_t> count_v_and_ones( const Container &bits )
     {
         uint64_t v = 0;
-        uint64_t countOnes = 0;
+        double countOnes = 0;
 
         for ( int i = 0; i < bits.size(); ++i )
         {
@@ -34,7 +35,7 @@ namespace runs_test {
                 ++countOnes;
         }
 
-        return { countOnes, v + 1 };
+        return { countOnes / bits.size(), v + 1 };
     }
 
     /**
@@ -48,23 +49,29 @@ namespace runs_test {
      * 
      * Since the observed value pi is within the selected bounds, the runs test is applicable.
     */
-    double runs_test( const std::vector<int> &bits ) 
+    template<typename Container>
+    double test( const Container &bits ) 
     {
         try {
             uint64_t n = bits.size();
 
             double tau = 2 / sqrt( n );
 
-            auto [ pi, v ] = count_v_and_ones( bits );
+            auto [ pi, v ] = count_v_and_ones<Container>( bits );
 
-            if ( fabs(pi - 0.5) >= tau )
-                throw "|pi - 0.5| >= tau => the tes is not run";
+            if ( fabs(pi - 0.5) >= tau ) 
+            {
+                std::cout << "|pi - 0.5| >= tau => the test is not run" << std::endl;
+                return 0.0;
+            }
 
-            return ( fabs( v - 2 * n * pi * (1 - pi) ) ) / ( 2 * sqrt( 2 * n ) * pi * ( 1 - pi ) );
+            return erfc( ( fabs( v - 2 * n * pi * (1 - pi) ) ) / ( 2 * sqrt( 2 * n ) * pi * ( 1 - pi ) ) ) ;
         }
         catch (std::exception e) {
             std::cout << e.what() << std::endl;	
         }
+
+        return 0.0;
     }
 
-}
+}//namespace runs_test
