@@ -1,13 +1,8 @@
-#include <algorithm>
 #include <iostream>
 #include <typeinfo>
-#include <fstream>
-#include <numeric>
-#include <cassert>
 #include <vector>
 #include <tuple>
 #include <cmath>
-#include <ctime>
 
 namespace runs_test {
 
@@ -21,13 +16,13 @@ namespace runs_test {
      * Since bits = 1001101011, then
      *                 V_{ n }(obs) = ( 1 + 0 + 1 + 0 + 1 + 1 + 1 + 1 + 0 ) + 1 = 7.
     */
-    template<typename Container>
+    template <typename Container>
     std::tuple<double, uint64_t> count_v_and_ones( const Container &bits )
     {
         uint64_t v = 0;
         double countOnes = 0;
 
-        for ( int i = 0; i < bits.size(); ++i )
+        for ( size_t i = 0; i < bits.size(); ++i )
         {
             if ( bits[i] != bits[i + 1] && i < bits.size() - 1 )
                 ++v;
@@ -49,29 +44,20 @@ namespace runs_test {
      * 
      * Since the observed value pi is within the selected bounds, the runs test is applicable.
     */
-    template<typename Container>
+    template <typename Container>
     double test( const Container &bits ) 
     {
-        try {
-            uint64_t n = bits.size();
+        uint64_t n = bits.size();
+        double tau = 2 / sqrt( n );
+        auto [ pi, v ] = count_v_and_ones( bits );
 
-            double tau = 2 / sqrt( n );
-
-            auto [ pi, v ] = count_v_and_ones<Container>( bits );
-
-            if ( fabs(pi - 0.5) >= tau ) 
-            {
-                std::cout << "|pi - 0.5| >= tau => the test is not run" << std::endl;
-                return 0.0;
-            }
-
-            return erfc( ( fabs( v - 2 * n * pi * (1 - pi) ) ) / ( 2 * sqrt( 2 * n ) * pi * ( 1 - pi ) ) ) ;
-        }
-        catch (std::exception e) {
-            std::cout << e.what() << std::endl;	
+        if ( std::fabs(pi - 0.5) >= tau ) 
+        {
+            std::cerr << "|pi - 0.5| >= tau => the test is not run" << std::endl;
+            return 0.0;
         }
 
-        return 0.0;
+        return erfc( ( std::fabs( v - 2.0 * n * pi * (1.0 - pi) ) ) / ( 2.0 * sqrt( 2.0 * n ) * pi * ( 1.0 - pi ) ) ) ;
     }
 
 }//namespace runs_test

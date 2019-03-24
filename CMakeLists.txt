@@ -13,7 +13,6 @@ set(${PROJECT_NAME}_SRC
 find_package(Boost 1.68.0)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
-  add_executable( f${PROJECT_NAME} ${${PROJECT_NAME}_SRC} )
 endif()
 
 #########################################################

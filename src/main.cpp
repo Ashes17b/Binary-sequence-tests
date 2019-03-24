@@ -1,4 +1,8 @@
+#include <fstream>
+#include <ctime>
+
 #include "runs_test.hpp"
+#include "random_excursion_variant_test.hpp"
 
 void test( const std::string filename ) 
 {
@@ -17,13 +21,14 @@ void test( const std::string filename )
     while ( f.get(c) ) 
     {
         for ( int i = 7; i >= 0; --i ) 
-            buffer.push_back( ((c >> i) & 1) );
+            buffer.push_back( ( ( (c >> i) & 1 ) * 2 ) - 1 );
     }
     f.close();
 
-    printf( "P-value: %.8f\n", runs_test::test( buffer ) );
-    printf( "Time taken: %.4fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC );
+    printf( "P-value runs_test: %.8f\n", runs_test::test( buffer ) );
+    printf( "P-value random_excursion_variant_test: %.8f\n", random_excursion_variant_test::test( buffer ) );
 
+    printf( "Time taken: %.4fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC );
     std::cout << std::endl;
 }
 
@@ -41,7 +46,7 @@ int main()
     return 0;
 }
 
-/**
+/** Count the one's.
  * Это тест count-1 для определенных байтов. 
  * Рассмотрим тестируемый файл как поток 32-битных целых чисел. 
  * Из каждого целого числа выбирается определенный байт, скажем, самые левые биты с 1 по 8. 
